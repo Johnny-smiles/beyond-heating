@@ -62,10 +62,6 @@
                 <li class="sm:hidden flex flex-col items-end space-y-2 w-full">
                     <NuxtLink to="/services" class="hover:text-brand-primary" @click="closeAll">All Services</NuxtLink>
                     <NuxtLink v-for="service in services" :key="service.slug" :to="`/services/${service.slug}`" class="hover:text-brand-primary" @click="closeAll">{{ service.title }}</NuxtLink>
-                    <NuxtLink to="/contact" class="hover:text-brand-primary" @click="closeAll">Contact</NuxtLink>
-                </li>
-                <li class="hidden sm:block">
-                    <NuxtLink to="/services" class="nav-link hover:text-brand-primary" @click="closeAll">Services</NuxtLink>
                 </li>
                 <li class="hidden sm:block">
                     <NuxtLink to="/contact" class="nav-link hover:text-brand-primary" @click="closeAll">Contact</NuxtLink>
