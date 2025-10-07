@@ -1,0 +1,85 @@
+site:
+  name: "Beyond Heating & Air"
+  domain: "beyondheatingandair.com"
+  phone: "+1-763-516-0494"
+  phone_display: "(763) 516-0494"
+  email: "beyondheatingandairllc@gmail.com"
+  street: ""              # (optional) add if you want it shown in schema
+  city: "Forest Lake"
+  region: "MN"
+  postal: ""              # (optional) add if you have it
+  country: "US"
+  hours: "Mo-Fr 08:00-18:00, Sa 09:00-14:00"   # adjust if they confirm different
+  description: "Residential & light commercial HVAC in the Twin Cities and East Central Minnesota—furnaces, A/C, heat pumps, mini-splits, maintenance, and indoor air quality."
+  service_area: ["Forest Lake", "East Central MN", "Twin Cities Metro"]
+
+branding:
+  colors:
+    primary: "#0f172a"        # dark slate (headings/body)
+    accent:  "#1d4ed8"        # brand blue (CTA/links)
+    light:   "#f3f4f6"        # page background
+    gradient_from: "#0ea5e9"  # cyan/blue blend for hero
+    gradient_to:   "#1d4ed8"
+  fonts:
+    heading: "Montserrat"
+    body: "Inter"
+
+assets:
+  logo: "public/logo.png"         # save their logo here before running
+  og_image: "public/og-image.jpg" # optional
+  hero_image: "public/hero.jpg"   # optional
+
+links:
+  website: "https://www.beyondheatingandair.com"
+  gbp: ""                         # add if/when you have their GBP link
+  facebook: ""                    # add if available
+  instagram: ""                   # add if available
+  yelp: ""                        # add if available
+
+niche: "hvac"
+
+features:
+  trust_badges: true
+  locations_strip: true
+  financing_strip: false          # flip to true if they offer financing
+
+services:
+  - slug: "furnace-installation-repair"
+    title: "Furnace Installation & Repair"
+    summary: "High-efficiency gas furnaces installed and serviced for dependable winter comfort."
+    bullets:
+      - "New installs & replacements"
+      - "Fast diagnostics & repair"
+      - "High-efficiency models"
+
+  - slug: "air-conditioning"
+    title: "Air Conditioning"
+    summary: "Reliable A/C installs and repairs to keep your home cool and efficient."
+    bullets:
+      - "Central A/C installation"
+      - "Same-day repairs when possible"
+      - "SEER2-compliant equipment"
+
+  - slug: "heat-pumps"
+    title: "Heat Pumps"
+    summary: "All-electric and dual-fuel heat pumps for year-round comfort in Minnesota."
+    bullets:
+      - "Cold-climate options"
+      - "Dual-fuel hybrid systems"
+      - "Utility rebates guidance"
+
+  - slug: "ductless-mini-splits"
+    title: "Ductless Mini-Splits"
+    summary: "Room-by-room comfort without ductwork—great for additions, garages, and sunrooms."
+    bullets:
+      - "Single & multi-zone systems"
+      - "Heating + cooling"
+      - "Quiet, high-efficiency"
+
+  - slug: "maintenance-and-tune-ups"
+    title: "Maintenance & Tune-Ups"
+    summary: "Seasonal tune-ups that improve efficiency, extend equipment life, and prevent breakdowns."
+    bullets:
+      - "Furnace & A/C checkups"
+      - "Filter & coil care"
+      - "Priority scheduling"

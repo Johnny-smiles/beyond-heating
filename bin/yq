@@ -1,0 +1,156 @@
+#!/usr/bin/env ruby
+# Minimal yq-compatible reader for setup.sh requirements.
+require 'yaml'
+
+def strip_wrapping_quotes(str)
+  return str unless str.length >= 2
+  if (str.start_with?("'") && str.end_with?("'")) || (str.start_with?('"') && str.end_with?('"'))
+    return str[1..-2]
+  end
+  str
+end
+
+def split_outside_quotes(str, delimiter)
+  parts = []
+  current = +''
+  depth = 0
+  quote = nil
+  str.each_char do |char|
+    if quote
+      if char == quote && current[-1] != '\\'
+        quote = nil
+      end
+      current << char
+      next
+    end
+
+    if char == "'" || char == '"'
+      quote = char
+      current << char
+      next
+    end
+
+    if char == '('
+      depth += 1
+      current << char
+      next
+    elsif char == ')'
+      depth -= 1 if depth.positive?
+      current << char
+      next
+    end
+
+    if depth.zero? && delimiter.include?(char)
+      parts << current.strip
+      current = +''
+    else
+      current << char
+    end
+  end
+  parts << current.strip
+  parts.reject(&:empty?)
+end
+
+def fetch_path(data, expr)
+  current = data
+  segments = expr.split('.').reject(&:empty?)
+  segments.each do |segment|
+    key = segment
+    index = nil
+    if key.include?('[')
+      key, index = key.split('[', 2)
+      index = index.delete_suffix(']').to_i
+    end
+
+    if !key.empty?
+      current = current.is_a?(Hash) ? current[key] || current[key.to_sym] : nil
+    end
+
+    return nil if current.nil?
+
+    if !index.nil?
+      current = current.is_a?(Array) ? current[index] : nil
+      return nil if current.nil?
+    end
+  end
+  current
+end
+
+def truthy?(value)
+  !(value.nil? || value == '' || (value.respond_to?(:empty?) && value.empty?))
+end
+
+def eval_expr(expr, data)
+  expr = expr.strip
+  expr = expr[1..-2].strip if expr.start_with?('(') && expr.end_with?(')')
+
+  # Handle pipe operations (currently only length)
+  pipe_parts = split_outside_quotes(expr, '|')
+  if pipe_parts.length > 1
+    value = eval_expr(pipe_parts.shift, data)
+    pipe_parts.each do |op|
+      op = op.strip
+      case op
+      when 'length'
+        value = value.respond_to?(:length) ? value.length : 0
+      else
+        raise "Unsupported pipe operation: #{op}"
+      end
+    end
+    return value
+  end
+
+  # Handle addition (string concatenation)
+  plus_parts = split_outside_quotes(expr, '+')
+  if plus_parts.length > 1
+    return plus_parts.map { |part| eval_expr(part, data).to_s }.join
+  end
+
+  expr = expr.strip
+  case expr
+  when /^["'].+["']$/
+    strip_wrapping_quotes(expr)
+  when /^-?\d+$/
+    expr.to_i
+  else
+    fetch_path(data, expr)
+  end
+end
+
+def evaluate(expr, data)
+  expr = expr.strip
+  expr = strip_wrapping_quotes(expr) if expr.start_with?('"') && expr.end_with?('"')
+  expr = strip_wrapping_quotes(expr) if expr.start_with?("'") && expr.end_with?("'")
+
+  # Handle fallback operator //
+  fallback_parts = expr.split(%r{\s+//\s+})
+  fallback_parts.each do |part|
+    value = eval_expr(part, data)
+    return value if truthy?(value)
+  end
+  eval_expr(fallback_parts.last, data)
+end
+
+if ARGV.length < 2
+  warn 'Usage: yq <expression> <file>'
+  exit 1
+end
+
+expression = ARGV.shift
+file = ARGV.shift
+
+data = YAML.load_file(file)
+
+array_output = false
+if expression.end_with?('[]')
+  array_output = true
+  expression = expression[0..-3]
+end
+
+result = evaluate(expression, data)
+
+if array_output
+  Array(result).each { |item| puts item }
+else
+  puts result
+end
